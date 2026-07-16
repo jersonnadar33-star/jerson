@@ -1,0 +1,18 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Order Confirmed — RIBAStore{% endblock %}
+
+{% block content %}
+<section class="container success-page">
+  <div class="success-check">
+    <svg viewBox="0 0 52 52">
+      <circle class="success-check-circle" cx="26" cy="26" r="25" fill="none"/>
+      <path class="success-check-mark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+  </div>
+  <h1>Thank you, {{ order.full_name }}!</h1>
+  <p>Your order <strong>#{{ order.id }}</strong> has been placed successfully.</p>
+  <p>A confirmation will be sent to <strong>{{ order.email }}</strong>.</p>
+  <a href="{% url 'home' %}" class="btn btn-primary">Continue Shopping</a>
+</section>
+{% endblock %}

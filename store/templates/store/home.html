@@ -1,0 +1,78 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}RIBAStore — Shop the Future{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-text" data-aos="fade-right">
+      <h1>Tech that feels <span class="highlight">alive</span>.</h1>
+      <p>Discover curated gadgets with a shopping experience built to delight.</p>
+      <a href="#products" class="btn btn-primary pulse">Shop Now</a>
+    </div>
+    <div class="hero-visual" data-aos="fade-left" data-aos-delay="150">
+      <div class="floating-card card-1"></div>
+      <div class="floating-card card-2"></div>
+      <div class="floating-card card-3"></div>
+    </div>
+  </div>
+</section>
+
+{% if featured %}
+<section class="container featured-section">
+  <h2 data-aos="fade-up">Featured</h2>
+  <div class="featured-grid">
+    {% for product in featured %}
+    <a href="{% url 'product_detail' product.slug %}" class="featured-card" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|add:'0' }}00">
+      {% if product.discount_percent %}<span class="badge">-{{ product.discount_percent }}%</span>{% endif %}
+      <img src="{{ product.image_display }}" alt="{{ product.name }}" loading="lazy">
+      <div class="featured-card-body">
+        <h3>{{ product.name }}</h3>
+        <p class="price">${{ product.price }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="container" id="products">
+  <div class="filter-bar" data-aos="fade-up">
+    <a href="{% url 'home' %}" class="chip {% if not active_category %}active{% endif %}">All</a>
+    {% for cat in categories %}
+    <a href="?category={{ cat.slug }}" class="chip {% if active_category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="product-grid">
+    {% for product in products %}
+    <div class="product-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'0' }}0">
+      <a href="{% url 'product_detail' product.slug %}" class="product-media">
+        {% if product.discount_percent %}<span class="badge">-{{ product.discount_percent }}%</span>{% endif %}
+        <img src="{{ product.image_display }}" alt="{{ product.name }}" loading="lazy">
+        <span class="quick-view">View details</span>
+      </a>
+      <div class="product-body">
+        <a href="{% url 'product_detail' product.slug %}" class="product-name">{{ product.name }}</a>
+        <div class="price-row">
+          <span class="price">${{ product.price }}</span>
+        </div>
+        <form action="{% url 'cart_add' product.id %}" method="post" class="add-form">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="next" value="{% url 'checkout' %}">
+          <button type="submit" class="btn btn-add" {% if not product.in_stock %}disabled{% endif %}>
+            {% if product.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+    {% empty %}
+    <p class="empty-state">No products found.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

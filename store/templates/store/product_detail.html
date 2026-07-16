@@ -1,0 +1,54 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} — RIBAStore{% endblock %}
+
+{% block content %}
+<section class="container product-detail">
+  <div class="detail-media" data-aos="fade-right">
+    {% if product.discount_percent %}<span class="badge">-{{ product.discount_percent }}%</span>{% endif %}
+    <img src="{{ product.image_display }}" alt="{{ product.name }}">
+  </div>
+  <div class="detail-info" data-aos="fade-left">
+    {% if product.category %}<span class="eyebrow">{{ product.category.name }}</span>{% endif %}
+    <h1>{{ product.name }}</h1>
+    <div class="price-row large">
+      <span class="price">${{ product.price }}</span>
+    </div>
+    <p class="description">{{ product.description }}</p>
+
+    <form action="{% url 'cart_add' product.id %}" method="post" class="add-form-detail">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'checkout' %}">
+      <div class="qty-control">
+        <button type="button" class="qty-btn" data-action="decrease">&minus;</button>
+        <input type="number" name="quantity" value="1" min="1" class="qty-input">
+        <button type="button" class="qty-btn" data-action="increase">+</button>
+      </div>
+      <button type="submit" class="btn btn-primary" {% if not product.in_stock %}disabled{% endif %}>
+        {% if product.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
+      </button>
+    </form>
+
+    <p class="stock-note {% if product.in_stock %}in{% else %}out{% endif %}">
+      {% if product.in_stock %}✓ In stock ({{ product.stock }} available){% else %}Currently unavailable{% endif %}
+    </p>
+  </div>
+</section>
+
+{% if related %}
+<section class="container featured-section">
+  <h2 data-aos="fade-up">You might also like</h2>
+  <div class="featured-grid">
+    {% for item in related %}
+    <a href="{% url 'product_detail' item.slug %}" class="featured-card" data-aos="zoom-in">
+      <img src="{{ item.image_display }}" alt="{{ item.name }}" loading="lazy">
+      <div class="featured-card-body">
+        <h3>{{ item.name }}</h3>
+        <p class="price">${{ item.price }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

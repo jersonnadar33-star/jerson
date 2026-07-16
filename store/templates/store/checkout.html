@@ -1,0 +1,80 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Checkout — RIBAStore{% endblock %}
+
+{% block content %}
+<section class="container checkout-page">
+  <h1 data-aos="fade-up">Checkout</h1>
+  <div class="checkout-grid">
+    <form method="post" class="checkout-form" data-aos="fade-right">
+      {% csrf_token %}
+      <label>Full Name
+        <input type="text" name="full_name" required>
+      </label>
+      <label>Email
+        <input type="email" name="email" required>
+      </label>
+      <label>Mobile Number
+        <input type="tel" name="phone_number" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number" required>
+      </label>
+      <label>Shipping Address
+        <textarea name="address" rows="3" required></textarea>
+      </label>
+      <div class="form-row">
+        <label>District
+          <input type="text" name="district" placeholder="e.g. Thoothukudi" required>
+        </label>
+        <label>Pin Code
+          <input type="text" name="pincode" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit pin code" required>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+    </form>
+
+    <div class="order-summary" data-aos="fade-left">
+      <h2>Order Summary</h2>
+      {% for item in cart %}
+      <div class="summary-row">
+        <span>{{ item.product.name }} &times; {{ item.quantity }}</span>
+        <span>${{ item.total_price }}</span>
+      </div>
+      {% endfor %}
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>${{ cart.get_total_price }}</span>
+      </div>
+
+      <div class="gpay-box">
+        <div class="gpay-header">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="11" stroke="#4285F4" stroke-width="2"/>
+            <path d="M7 12.5l3 3 6-6" stroke="#34A853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Pay via Google Pay (UPI)</span>
+        </div>
+        <div class="gpay-number-row">
+          <span id="gpayNumber" class="gpay-number">6380510793</span>
+          <button type="button" class="gpay-copy-btn" onclick="copyGpayNumber()">Copy</button>
+        </div>
+        <p class="gpay-note">Send the total amount to this number, then place your order below.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function copyGpayNumber() {
+  const number = document.getElementById('gpayNumber').textContent;
+  navigator.clipboard.writeText(number).then(function () {
+    const btn = document.querySelector('.gpay-copy-btn');
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+</script>
+{% endblock %}
